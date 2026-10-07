@@ -1,0 +1,35 @@
+% Plantilla básica de 2latex. Sirve de ejemplo para hacer la tuya.
+%
+% Marcadores que rellena 2latex (todos opcionales):
+%   %%2LATEX-PREAMBULO%%   paquetes y entornos que necesita el contenido (si falta: antes de \begin{document})
+%   %%2LATEX-CONTENIDO%%   los apuntes del tema (si falta: antes de \end{document})
+%   @@TITULO@@  @@AUTOR@@  @@FECHA@@  @@TEMA@@   se sustituyen por su valor
+%
+% Funciona con pdflatex, xelatex, lualatex y tectonic.
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+\fi
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{parskip}
+
+%%2LATEX-PREAMBULO%%
+
+\title{@@TITULO@@}
+\author{@@AUTOR@@}
+\date{@@FECHA@@}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%%2LATEX-CONTENIDO%%
+
+\end{document}

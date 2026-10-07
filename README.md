@@ -1,17 +1,19 @@
-# aprender + contrastar
+# aprender + contrastar + 2latex
 
-Dos skills para [Pi](https://github.com/earendil-works/pi) para estudiar a partir de PDFs:
+Tres skills para [Pi](https://github.com/earendil-works/pi) para estudiar a partir de PDFs:
 
 - **[`aprender`](#aprender)** convierte tus PDFs en **apuntes enlazados al estilo Obsidian**, contrasta los datos y después **te enseña la materia** con sesiones guiadas, preguntas tipo test y repaso espaciado.
 - **[`contrastar`](#contrastar)** verifica cualquier material (PDF, notas o texto) **afirmación por afirmación** contra Wikipedia y fuentes primarias.
+- **[`2latex`](#2latex)** convierte los apuntes de un tema en un **PDF con tu plantilla LaTeX**.
 
 ```
 .
 ├── aprender/      ← SKILL.md + scripts/
-└── contrastar/    ← SKILL.md + scripts/
+├── contrastar/    ← SKILL.md + scripts/
+└── 2latex/        ← SKILL.md + scripts/ + assets/ (plantilla básica)
 ```
 
-Se instalan juntas con un solo `git clone` (ver [Instalación](#instalación)).
+Se instalan las tres con un solo `git clone` (ver [Instalación](#instalación)).
 
 ## aprender
 
@@ -82,6 +84,7 @@ Una carpeta por PDF, con su nombre, dentro de la carpeta donde abriste Pi:
 │   ├── _Tema1 - Progreso.md     ← tu progreso y fechas de repaso
 │   ├── Fuente - Tema1.md        ← resumen del PDF y registro de lectura
 │   ├── Contraste - Tema1.md     ← informe de la skill contrastar
+│   ├── Tema1.pdf                ← generado por la skill 2latex
 │   ├── Conceptos/               ← una nota por concepto
 │   ├── Sesiones/                ← registro de cada sesión de estudio
 │   └── .fuentes/                ← texto extraído (caché, oculto en Obsidian)
@@ -108,6 +111,49 @@ Comprueba si lo que dice un material es cierto y está actualizado, afirmación 
 - **Clasifica cada afirmación**: ✅ verificado · ℹ️ matizado · ❌ discrepancia (con qué es correcto, por qué y si hay riesgo de examen) · ❓ sin fuente.
 - **Nunca toca el original.** Para un PDF crea `Tema1/Contraste - Tema1.md`. En apuntes de `aprender` rellena la sección `## Contraste` de cada nota y `01 Tema1 - Contraste.md`. Para otras notas escribe un informe aparte.
 
+## 2latex
+
+Mete todos los apuntes de un tema en una plantilla LaTeX y genera el PDF: `/Estudios/Tema1/` da `/Estudios/Tema1/Tema1.pdf`.
+
+| Comando | Qué hace |
+|---|---|
+| `/skill:2latex` | Te pregunta qué tema y genera su PDF |
+| `/skill:2latex Tema1` | Ese tema, sin preguntar |
+| `/skill:2latex todos` | Un PDF por tema |
+| `/skill:2latex Tema1 autor "Juan"` | Con autor (también `titulo "…"`) |
+| `/skill:2latex Tema1 sin contraste` | Sin el capítulo de contraste de fuentes |
+
+**Tu plantilla**: ponla en `plantilla/`, dentro de la carpeta de estudio, con sus `.cls`, `.sty` y logos:
+
+```
+/Estudios/
+├── plantilla/
+│   ├── apuntes.tex     ← con \documentclass
+│   ├── miestilo.sty
+│   └── logo.png
+└── Tema1/
+```
+
+También vale un `plantilla.tex` suelto, o indicar otra ruta. Si no hay ninguna, usa la plantilla básica incluida (`2latex/assets/plantilla-basica/plantilla.tex`), que sirve de ejemplo.
+
+En tu plantilla puedes poner estos marcadores, todos opcionales:
+
+```latex
+%%2LATEX-PREAMBULO%%   % paquetes que necesita el contenido (si falta: antes de \begin{document})
+%%2LATEX-CONTENIDO%%   % los apuntes (si falta: antes de \end{document})
+@@TITULO@@  @@AUTOR@@  @@FECHA@@  @@TEMA@@
+```
+
+Si tu plantilla no tiene marcadores y el contenido debe ir en otro sitio (una sección fija, un entorno propio), la skill lee la plantilla y lo coloca donde corresponde. Tu plantilla nunca se modifica: todo se genera en `Tema1/.latex/`.
+
+**Qué hace con los apuntes:**
+- Los ordena según la ruta de estudio: introducción, conceptos y contraste al final.
+- Convierte los `[[enlaces]]` en referencias internas con hipervínculo y los callouts en cajas de colores.
+- Conserva fórmulas y tablas.
+- Dibuja los diagramas mermaid si tienes `mmdc`; si no, los convierte en una lista de relaciones.
+- Elige el motor según la plantilla (pdflatex, o xelatex si usa `fontspec`).
+- Si la compilación falla, lee el log y lo arregla, o te dice la línea exacta y la causa.
+
 ## Instalación
 
 ### 1. Requisitos
@@ -116,23 +162,26 @@ Comprueba si lo que dice un material es cierto y está actualizado, afirmación 
 - Python 3 con `pypdf`.
 - Acceso a internet, para el contraste.
 - Opcional: `poppler` (`pdftoppm`), para adaptar imágenes como página completa.
+- Para `2latex`: `pandoc` y un compilador de LaTeX. Lo más ligero es **tectonic**, que descarga solo los paquetes que necesita (la primera vez tarda unos minutos). La alternativa es TeX Live con `latexmk`.
 
 **Alpine** (3.21 o superior; `py3-pypdf` está en el repositorio *community*):
 ```sh
 doas apk add bash python3 py3-pypdf poppler-utils ca-certificates nodejs npm git tmux
+doas apk add pandoc-cli tectonic          # para 2latex
 doas npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 ```
 
 **Debian / Ubuntu:**
 ```sh
 sudo apt install python3 python3-pypdf poppler-utils git tmux
+sudo apt install pandoc texlive-latex-extra texlive-xetex latexmk   # para 2latex
 # Node.js 22.19+ desde nodesource o nvm, y después:
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 ```
 
 **macOS:**
 ```sh
-brew install python poppler node && python3 -m pip install --user pypdf
+brew install python poppler node pandoc tectonic && python3 -m pip install --user pypdf
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 ```
 
@@ -142,7 +191,7 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 git clone https://github.com/Shikillo/aprender.git ~/.agents/skills/estudio
 ```
 
-Pi busca `SKILL.md` en las subcarpetas de `~/.agents/skills/`, así que encuentra `aprender` y `contrastar` dentro de `estudio/`. Comprueba que aparecen escribiendo `/skill:` en Pi.
+Pi busca `SKILL.md` en las subcarpetas de `~/.agents/skills/`, así que encuentra `aprender`, `contrastar` y `2latex` dentro de `estudio/`. Comprueba que aparecen escribiendo `/skill:` en Pi.
 
 Para actualizarlas:
 ```sh
@@ -188,6 +237,7 @@ Los usan las skills; no hace falta ejecutarlos a mano. Todos usan solo la biblio
 | `contrastar.py` | las dos | Busca un término en Wikipedia (español e inglés) y Wikcionario, con las fórmulas en LaTeX |
 | `revisar_lectura.py` | las dos | Comprueba que el registro de lectura cubre todas las páginas. En `aprender` mira la nota `Fuente - <T>`; en `contrastar`, el informe `Contraste - <T>` |
 | `revisar_enlaces.py` | aprender | Busca enlaces `[[...]]` rotos y notas huérfanas en el vault |
+| `md2latex.py` + `callouts.lua` | 2latex | Junta las notas del tema, las convierte con pandoc, rellena la plantilla y compila |
 
 Cada skill lleva su propia copia de los scripts para poder funcionar sola. Si cambias `extraer_pdfs.py` o `contrastar.py`, cópialo a las dos carpetas.
 

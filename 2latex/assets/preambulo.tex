@@ -1,0 +1,42 @@
+% --- Añadido por 2latex: lo que necesita el contenido convertido desde Obsidian. ---
+% Se carga en el preámbulo de la plantilla. Si la plantilla ya carga alguno de estos paquetes,
+% LaTeX ignora la segunda carga (sin opciones no hay conflicto).
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{longtable,booktabs,array,calc}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+% Macros que usa la salida de pandoc
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\passthrough}[1]{#1}
+\providecommand{\st}[1]{#1}
+\providecommand{\ul}[1]{\underline{#1}}
+\makeatletter
+\providecommand{\pandocbounded}[1]{%
+  \begingroup\sbox0{#1}%
+  \ifdim\wd0>\linewidth\resizebox{\linewidth}{!}{\usebox0}\else\usebox0\fi
+  \endgroup}
+\makeatother
+
+% Callouts de Obsidian: \begin{callout}{tipo}{título}
+\definecolor{callout-note}{HTML}{448AFF}
+\definecolor{callout-abstract}{HTML}{00B0FF}
+\definecolor{callout-info}{HTML}{00B8D4}
+\definecolor{callout-tip}{HTML}{00BFA5}
+\definecolor{callout-success}{HTML}{00C853}
+\definecolor{callout-question}{HTML}{64DD17}
+\definecolor{callout-warning}{HTML}{FF9100}
+\definecolor{callout-danger}{HTML}{FF1744}
+\definecolor{callout-example}{HTML}{7C4DFF}
+\definecolor{callout-quote}{HTML}{9E9E9E}
+\newtcolorbox{callout}[2]{%
+  enhanced, breakable,
+  colframe=callout-#1!80!black, colback=callout-#1!6, coltitle=white,
+  colbacktitle=callout-#1!80!black, fonttitle=\bfseries,
+  boxrule=0.6pt, arc=2pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=8pt, after skip=8pt,
+  title={#2}}
+% --- Fin de lo añadido por 2latex ---
