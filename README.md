@@ -1,19 +1,21 @@
-# aprender + contrastar + 2latex
+# aprender + contrastar + 2latex + jardin
 
-Tres skills para [Pi](https://github.com/earendil-works/pi) para estudiar a partir de PDFs:
+Cuatro skills para [Pi](https://github.com/earendil-works/pi) para estudiar a partir de PDFs:
 
 - **[`aprender`](#aprender)** convierte tus PDFs en **apuntes enlazados al estilo Obsidian**, contrasta los datos y después **te enseña la materia** con sesiones guiadas, preguntas tipo test y repaso espaciado.
 - **[`contrastar`](#contrastar)** verifica cualquier material (PDF, notas o texto) **afirmación por afirmación** contra Wikipedia y fuentes primarias.
 - **[`2latex`](#2latex)** convierte los apuntes de un tema en un **PDF con tu plantilla LaTeX**.
+- **[`jardin`](#publicar-como-jardín-digital)** deja cualquier carpeta de notas **lista para publicar** con el plugin Digital Garden de Obsidian.
 
 ```
 .
 ├── aprender/      ← SKILL.md + scripts/
 ├── contrastar/    ← SKILL.md + scripts/
-└── 2latex/        ← SKILL.md + scripts/ + assets/ (plantilla básica)
+├── 2latex/        ← SKILL.md + scripts/ + assets/ (plantilla básica)
+└── jardin/        ← SKILL.md + scripts/
 ```
 
-Se instalan las tres con un solo `git clone` (ver [Instalación](#instalación)).
+Se instalan las cuatro con un solo `git clone` (ver [Instalación](#instalación)).
 
 ## aprender
 
@@ -192,7 +194,7 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 git clone https://github.com/Shikillo/aprender.git ~/.agents/skills/estudio
 ```
 
-Pi busca `SKILL.md` en las subcarpetas de `~/.agents/skills/`, así que encuentra `aprender`, `contrastar` y `2latex` dentro de `estudio/`. Comprueba que aparecen escribiendo `/skill:` en Pi.
+Pi busca `SKILL.md` en las subcarpetas de `~/.agents/skills/`, así que encuentra `aprender`, `contrastar`, `2latex` y `jardin` dentro de `estudio/`. Comprueba que aparecen escribiendo `/skill:` en Pi.
 
 Para actualizarlas:
 ```sh
@@ -226,11 +228,21 @@ La carpeta de estudio está lista para publicarse con el plugin [Digital Garden]
 - **`index.md`** es la portada (`dg-home: true`) y enlaza todas las asignaturas. Cada vez que se genera un tema nuevo, se añade a su sección `## Asignaturas` sin tocar lo que hayas escrito en el index.
 - Las carpetas ocultas (`.fuentes/`, `.latex/`) no se publican.
 
-Lo hace el script `preparar_jardin.py`, que las skills ejecutan al terminar. También puedes ejecutarlo a mano sobre una carpeta que ya tengas:
+`aprender` y `contrastar` lo hacen solas al terminar. Para cualquier otra carpeta (notas tuyas, una carpeta antigua o después de editar a mano) está la skill **`jardin`**:
+
+| Comando | Qué hace |
+|---|---|
+| `/skill:jardin` | Revisa todas las notas de la carpeta actual y les añade lo que falte para publicarse |
+| `/skill:jardin simular` | Solo te dice qué cambiaría, sin tocar nada |
+| `/skill:jardin /otra/carpeta` | Lo mismo en otra carpeta |
+
+Además de marcar las notas, completa `index.md` con las asignaturas nuevas (con una descripción de cada una) y te avisa de lo que pueda salir mal al publicar: dos portadas, carpetas sin índice o enlaces a notas que no se publican.
+
+Sin Pi, también puedes ejecutar el script directamente:
 
 ```sh
-python3 -I ~/.agents/skills/estudio/aprender/scripts/preparar_jardin.py /Estudios --simular   # ver qué cambiaría
-python3 -I ~/.agents/skills/estudio/aprender/scripts/preparar_jardin.py /Estudios
+python3 -I ~/.agents/skills/estudio/jardin/scripts/preparar_jardin.py /Estudios --simular   # ver qué cambiaría
+python3 -I ~/.agents/skills/estudio/jardin/scripts/preparar_jardin.py /Estudios
 ```
 
 Si tenías un `00 Índice general.md` de una versión anterior, se renombra a `index.md` y se actualizan los enlaces.
@@ -255,11 +267,11 @@ Los usan las skills; no hace falta ejecutarlos a mano. Todos usan solo la biblio
 | `contrastar.py` | las dos | Busca un término en Wikipedia (español e inglés) y Wikcionario, con las fórmulas en LaTeX |
 | `revisar_lectura.py` | las dos | Comprueba que el registro de lectura cubre todas las páginas. En `aprender` mira la nota `Fuente - <T>`; en `contrastar`, el informe `Contraste - <T>` |
 | `revisar_enlaces.py` | aprender | Busca enlaces `[[...]]` rotos y notas huérfanas en el vault |
-| `preparar_jardin.py` | aprender, contrastar | Pone `dg-publish: true` en todas las notas y crea o completa `index.md` (portada, `dg-home`) con todas las asignaturas |
+| `preparar_jardin.py` | aprender, contrastar, jardin | Pone `dg-publish: true` en todas las notas y crea o completa `index.md` (portada, `dg-home`) con todas las asignaturas |
 | `revisar_notas.py` | aprender | Detecta notas de concepto vacías o a medias (sin "En una frase", sin "Qué es" desarrollado, sin páginas, secciones vacías…) |
 | `md2latex.py` + `callouts.lua` | 2latex | Junta las notas del tema, las convierte con pandoc, rellena la plantilla y compila |
 
-Cada skill lleva su propia copia de los scripts para poder funcionar sola. Si cambias `extraer_pdfs.py` o `contrastar.py`, cópialo a las dos carpetas.
+Cada skill lleva su propia copia de los scripts para poder funcionar sola. Si cambias `extraer_pdfs.py`, `contrastar.py` o `preparar_jardin.py`, copia el cambio a todas las carpetas que lo tengan.
 
 ## Créditos
 
