@@ -1,6 +1,6 @@
 # aprender + contrastar + 2latex + jardin
 
-Cuatro skills para [Pi](https://github.com/earendil-works/pi) para estudiar a partir de PDFs:
+Cuatro skills para estudiar a partir de PDFs. Funcionan en [Pi](https://github.com/earendil-works/pi) y en [Claude Code](https://code.claude.com), con los mismos ficheros:
 
 - **[`aprender`](#aprender)** convierte tus PDFs en **apuntes enlazados al estilo Obsidian**, contrasta los datos y después **te enseña la materia** con sesiones guiadas, preguntas tipo test y repaso espaciado.
 - **[`contrastar`](#contrastar)** verifica cualquier material (PDF, notas o texto) **afirmación por afirmación** contra Wikipedia y fuentes primarias.
@@ -12,8 +12,11 @@ Cuatro skills para [Pi](https://github.com/earendil-works/pi) para estudiar a pa
 ├── aprender/      ← SKILL.md + scripts/
 ├── contrastar/    ← SKILL.md + scripts/
 ├── 2latex/        ← SKILL.md + scripts/ + assets/ (plantilla básica)
-└── jardin/        ← SKILL.md + scripts/
+├── jardin/        ← SKILL.md + scripts/
+└── instalar.sh    ← enlaza las skills en Claude Code
 ```
+
+En Pi se escriben como `/skill:aprender`, y en Claude Code como `/aprender`. En este README se usa la forma de Pi.
 
 Se instalan las cuatro con un solo `git clone` (ver [Instalación](#instalación)).
 
@@ -52,7 +55,7 @@ Las imágenes de los PDF **no se procesan por defecto**. Las páginas que son so
 
 ### Uso
 
-Abre Pi en tu carpeta de estudio, con los PDFs dentro de una subcarpeta `pdf/`:
+Abre Pi o Claude Code en tu carpeta de estudio, con los PDFs dentro de una subcarpeta `pdf/`:
 
 ```
 /Estudios/
@@ -65,7 +68,7 @@ Abre Pi en tu carpeta de estudio, con los PDFs dentro de una subcarpeta `pdf/`:
 |---|---|
 | `/skill:aprender` | Te pregunta qué PDF y hace los apuntes o empieza a estudiar, según si ya existen |
 | `/skill:aprender tema 2` | Usa ese PDF sin preguntar (vale un trozo del nombre, sin importar tildes ni mayúsculas) |
-| `/skill:aprender ~/Descargas/libro.pdf` | Un PDF de cualquier sitio; su carpeta se crea donde está abierto Pi |
+| `/skill:aprender ~/Descargas/libro.pdf` | Un PDF de cualquier sitio; su carpeta se crea donde está abierto el agente |
 | `/skill:aprender todos` | Todos los PDFs, cada uno en su carpeta |
 | `/skill:aprender tema 2 estudiar` | Sesión de estudio guiada |
 | `/skill:aprender repaso` | Repasa lo que toca hoy |
@@ -76,7 +79,7 @@ Aparte de elegir el PDF, la generación de apuntes no hace preguntas.
 
 ### Resultado
 
-Una carpeta por PDF, con su nombre, dentro de la carpeta donde abriste Pi:
+Una carpeta por PDF, con su nombre, dentro de la carpeta donde abriste el agente:
 
 ```
 /Estudios/                       ← ábrela como vault en Obsidian
@@ -162,7 +165,7 @@ Si tu plantilla no tiene marcadores y el contenido debe ir en otro sitio (una se
 
 ### 1. Requisitos
 
-- [Pi](https://github.com/earendil-works/pi), que necesita Node.js 22.19 o superior.
+- [Pi](https://github.com/earendil-works/pi) (necesita Node.js 22.19 o superior), [Claude Code](https://code.claude.com), o los dos.
 - Python 3 con `pypdf`.
 - Acceso a internet, para el contraste.
 - Opcional: `poppler` (`pdftoppm`), para adaptar imágenes como página completa.
@@ -191,24 +194,33 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
 ### 2. Las skills
 
+Se clona una sola vez y sirve para los dos agentes:
+
 ```sh
 git clone https://github.com/Shikillo/aprender.git ~/.agents/skills/estudio
 ```
 
-Pi busca `SKILL.md` en las subcarpetas de `~/.agents/skills/`, así que encuentra `aprender`, `contrastar`, `2latex` y `jardin` dentro de `estudio/`. Comprueba que aparecen escribiendo `/skill:` en Pi.
+- **Pi** busca `SKILL.md` en las subcarpetas de `~/.agents/skills/`, así que ya encuentra `aprender`, `contrastar`, `2latex` y `jardin`. Comprueba que aparecen escribiendo `/skill:` en Pi.
+- **Claude Code** solo busca en las subcarpetas directas de `~/.claude/skills/`. Ejecuta el instalador, que crea un enlace por skill:
+  ```sh
+  ~/.agents/skills/estudio/instalar.sh
+  ```
+  Abre una sesión nueva de Claude Code y escribe `/` para verlas. `./instalar.sh .claude/skills` las instala solo en un proyecto, y `./instalar.sh --quitar` borra los enlaces.
 
-Para actualizarlas:
+Para actualizarlas (en los dos agentes a la vez, porque Claude Code usa enlaces al mismo repo):
 ```sh
 git -C ~/.agents/skills/estudio pull
 ```
 
-Para usarlas solo en un proyecto, clona el repo en `.pi/skills/estudio/` dentro de ese proyecto.
+Para usarlas solo en un proyecto con Pi, clona el repo en `.pi/skills/estudio/` dentro de ese proyecto.
 
 > **Si vienes de una versión anterior** (con la skill en `~/.agents/skills/aprender/` o `contrastar/` copiada aparte), borra esas carpetas antes de clonar. Si no, Pi tendrá dos skills con el mismo nombre.
 
-### 3. Recomendado: herramientas de learn
+### 3. Recomendado en Pi: herramientas de learn
 
-La skill funciona sin nada más: hace las preguntas en el chat y contrasta con Wikipedia. Pero mejora mucho con las extensiones de [amosblomqvist/learn](https://github.com/amosblomqvist/learn), si están instaladas:
+En Claude Code no hace falta: ya trae preguntas con opciones (`AskUserQuestion`), búsqueda web (`WebSearch`, `WebFetch`) y subagentes (`Agent`), y las skills los usan directamente.
+
+En Pi, la skill funciona sin nada más: hace las preguntas en el chat y contrasta con Wikipedia. Pero mejora mucho con las extensiones de [amosblomqvist/learn](https://github.com/amosblomqvist/learn), si están instaladas:
 
 | Herramienta | Qué aporta |
 |---|---|
@@ -239,7 +251,7 @@ La carpeta de estudio está lista para publicarse con el plugin [Digital Garden]
 
 Además de marcar las notas, completa `index.md` con las asignaturas nuevas (con una descripción de cada una) y te avisa de lo que pueda salir mal al publicar: dos portadas, carpetas sin índice o enlaces a notas que no se publican.
 
-Sin Pi, también puedes ejecutar el script directamente:
+Sin abrir ningún agente, también puedes ejecutar el script directamente:
 
 ```sh
 python3 -I ~/.agents/skills/estudio/jardin/scripts/preparar_jardin.py /Estudios --simular   # ver qué cambiaría
@@ -250,11 +262,11 @@ Si tenías un `00 Índice general.md` de una versión anterior, se renombra a `i
 
 ## Usarla en un servidor por SSH
 
-Pi y la skill funcionan en el servidor, pero Obsidian está en tu ordenador:
+El agente (Pi o Claude Code) y las skills funcionan en el servidor, pero Obsidian está en tu ordenador:
 
 - Las skills crean las notas sin imprimirlas en el terminal: las lees en Obsidian. Pi enseña solo las 10 primeras líneas de cada fichero creado; si ves notas enteras, pulsa **Ctrl+O** para plegar la salida de las herramientas.
 
-- Ejecuta Pi dentro de **tmux**, para que una conexión caída no corte la generación de apuntes.
+- Ejecuta Pi o Claude Code dentro de **tmux**, para que una conexión caída no corte la generación de apuntes.
 - Para ver los apuntes en Obsidian, sincroniza la carpeta de estudio:
   - **Syncthing** (`apk add syncthing` / `apt install syncthing`): sincroniza en los dos sentidos. Es lo mejor si escribes en `## Mis notas`.
   - **rsync**, en un solo sentido: `rsync -avz --exclude pdf/ usuario@servidor:/Estudios/ ~/Obsidian/Estudios/`

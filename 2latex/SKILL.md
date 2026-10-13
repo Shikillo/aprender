@@ -1,16 +1,21 @@
 ---
 name: 2latex
 description: Convierte los apuntes .md de un tema (las notas Obsidian que genera la skill aprender) en un PDF con una plantilla LaTeX, que puede ser la del usuario o una básica incluida. Ordena las notas según la ruta de estudio y convierte enlaces, callouts, fórmulas, tablas y diagramas. Úsala cuando el usuario quiera pasar sus apuntes o un tema a LaTeX o PDF, imprimirlos, maquetarlos con su plantilla o exportarlos fuera de Obsidian.
-compatibility: Pi en Linux (también por SSH) o macOS. Necesita python3, pandoc y un compilador de LaTeX (tectonic, o TeX Live con latexmk). Opcional, mmdc (mermaid-cli) para dibujar los diagramas mermaid.
+compatibility: Pi o Claude Code, en Linux (también por SSH) o macOS. Necesita python3, pandoc y un compilador de LaTeX (tectonic, o TeX Live con latexmk). Opcional, mmdc (mermaid-cli) para dibujar los diagramas mermaid.
 ---
 
 # 2latex
 
 Toma la carpeta de un tema (por ejemplo `/Estudios/Tema1/`), mete sus apuntes en una plantilla LaTeX, compila y deja el PDF en `/Estudios/Tema1/Tema1.pdf`.
 
-Uso: `/skill:2latex [tema] [plantilla <ruta>] [autor "<nombre>"] [titulo "<título>"] [sin contraste] [solo tex]`
+Uso: `/skill:2latex [tema] [plantilla <ruta>] [autor "<nombre>"] [titulo "<título>"] [sin contraste] [solo tex]` en Pi, o `/2latex …` en Claude Code
 
-El script está en `scripts/`, dentro del directorio de esta skill (Pi te dice dónde está). En los comandos, `<skill>` es esa ruta. `<sesión>` es el directorio donde se ha abierto Pi.
+El script está en `scripts/`, dentro del directorio de esta skill. En los comandos, `<skill>` es esa ruta: en Claude Code es `${CLAUDE_SKILL_DIR}`; en Pi, la ruta que Pi indica al cargar la skill. `<sesión>` es el directorio donde se ha abierto el agente.
+
+## Pi y Claude Code
+
+Esta skill funciona igual en los dos agentes. Las herramientas `read`, `write`, `edit` y `bash` de Pi son `Read`, `Write`, `Edit` y `Bash` en Claude Code, y `ask_user_question` es `AskUserQuestion` (de 2 a 4 opciones; si hay más, lista numerada en el chat). Se invoca con `/skill:<nombre> …` en Pi y con `/<nombre> …` en Claude Code.
+
 
 **Pregunta lo mínimo.** Lo único que se pregunta es el tema (paso 0). Todo lo demás se decide con los valores por defecto, y al final explicas lo que has decidido.
 
@@ -30,7 +35,7 @@ El script está en `scripts/`, dentro del directorio de esta skill (Pi te dice d
    ```
    - Si solo hay uno, úsalo y di cuál es.
    - Si hay varios, pregunta cuál, con `ask_user_question` si existe o en el chat, mediante una lista numerada con la opción "Todos" (un PDF por tema). Marca los que ya tienen PDF (`<T>/<T>.pdf`).
-   - Si no hay ninguno, dilo y sugiere generar los apuntes antes con `/skill:aprender`.
+   - Si no hay ninguno, dilo y sugiere generar los apuntes antes con la skill `aprender`.
 
 ## Paso 1: la plantilla
 

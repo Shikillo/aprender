@@ -1,18 +1,34 @@
 ---
 name: contrastar
 description: Verifica afirmaciones contra Wikipedia y fuentes primarias (BOE, normas, organismos oficiales, artículos), afirmación por afirmación y citando cada fuente. Comprueba definiciones, fórmulas, cifras, fechas, nombres y leyes de un PDF, de unos apuntes .md o Obsidian (también los que genera la skill aprender) o de un texto. Marca cada afirmación como verificada, discrepante, matizada o sin fuente, y nunca cambia el original en silencio. Úsala cuando el usuario quiera contrastar, verificar o comprobar datos, buscar erratas o errores, o saber si un temario o unos apuntes son fiables o están actualizados.
-compatibility: Pi en Linux (también por SSH) o macOS. Necesita python3 con pypdf y acceso a internet. Opcional pero recomendado, el agente researcher o las herramientas web_search/web_fetch (por ejemplo, de github.com/amosblomqvist/learn) para fuentes primarias.
+compatibility: Pi o Claude Code, en Linux (también por SSH) o macOS. Necesita python3 con pypdf y acceso a internet. Opcional pero recomendado, el agente researcher o las herramientas web_search/web_fetch (por ejemplo, de github.com/amosblomqvist/learn) para fuentes primarias.
 ---
 
 # Contrastar
 
 Comprueba si lo que dice un material es cierto y está actualizado, **afirmación por afirmación**, contra fuentes externas, y deja por escrito el resultado con sus fuentes.
 
-Uso: `/skill:contrastar [PDF | nota.md | carpeta de apuntes | texto]`
+Uso: `/skill:contrastar [PDF | nota.md | carpeta de apuntes | texto]` en Pi, o `/contrastar …` en Claude Code
 
-**Dónde se escribe**: igual que `aprender`, en **una carpeta por PDF** con el nombre del PDF, dentro de la carpeta donde se ha abierto Pi (`<sesión>`). Si abres Pi en `/Estudios` y contrastas `/Estudios/pdf/Tema1.pdf`, el informe va a `/Estudios/Tema1/`. El extractor da esa ruta en el campo `salida` (en adelante `<T>` es su nombre). Si `aprender` ya creó esa carpeta, se comparte.
+**Dónde se escribe**: igual que `aprender`, en **una carpeta por PDF** con el nombre del PDF, dentro de la carpeta donde se ha abierto el agente (`<sesión>`). Si abres Pi o Claude Code en `/Estudios` y contrastas `/Estudios/pdf/Tema1.pdf`, el informe va a `/Estudios/Tema1/`. El extractor da esa ruta en el campo `salida` (en adelante `<T>` es su nombre). Si `aprender` ya creó esa carpeta, se comparte.
 
-Los scripts están en `scripts/`, dentro del directorio de esta skill (Pi te dice dónde está). En los comandos, `<skill>` es esa ruta. Ejecútalos siempre con `python3 -I`. Habla con el usuario en su idioma; escribe el informe en el idioma del material.
+Los scripts están en `scripts/`, dentro del directorio de esta skill. En los comandos, `<skill>` es esa ruta: en Claude Code es `${CLAUDE_SKILL_DIR}`; en Pi, la ruta que Pi indica al cargar la skill. Ejecútalos siempre con `python3 -I`. Habla con el usuario en su idioma; escribe el informe en el idioma del material.
+
+## Pi y Claude Code
+
+Esta skill funciona igual en los dos agentes. Solo cambian los nombres de las herramientas:
+
+| Para | Pi | Claude Code |
+|---|---|---|
+| Leer, crear y modificar ficheros | `read`, `write`, `edit` | `Read`, `Write`, `Edit` |
+| Ejecutar comandos | `bash` | `Bash` |
+| Preguntas sin respuesta correcta | `ask_user_question` | `AskUserQuestion` (de 2 a 4 opciones; si hay más, lista numerada en el chat) |
+| Preguntas tipo test | `quiz` (de amosblomqvist/learn) | `AskUserQuestion` con las opciones, sin marcar la correcta; corriges tú en el chat |
+| Buscar en la web | `researcher`, `web_search`, `web_fetch` | `WebSearch`, `WebFetch` |
+| Trabajo en paralelo | subagentes | herramienta `Agent`, con varias llamadas en un mismo mensaje |
+| Ver páginas de un PDF como imagen | `read` sobre las imágenes del extractor | `Read` sobre el PDF con `pages` (máximo 20 páginas por llamada), o sobre las imágenes del extractor |
+
+Donde el texto nombre una herramienta de Pi, usa su equivalente si estás en Claude Code. Las preguntas al usuario se hacen siempre desde la conversación principal: en Claude Code, los subagentes no pueden usar `AskUserQuestion`. Se invoca con `/skill:<nombre> …` en Pi y con `/<nombre> …` en Claude Code.
 
 ## Reglas que no se negocian
 

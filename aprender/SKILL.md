@@ -1,7 +1,7 @@
 ---
 name: aprender
 description: Convierte una carpeta de PDFs (temarios, apuntes, libros, diapositivas) en un vault de apuntes .md enlazados al estilo Obsidian ([[wikilinks]], mapa de dependencias, preguntas de autoevaluación), contrasta los datos con Wikipedia y otras fuentes externas, y después enseña la materia con sesiones guiadas (sondeo, plan, enseñanza nodo a nodo, quiz y repaso espaciado). Úsala cuando el usuario quiera estudiar o aprender una materia a partir de PDFs, hacer apuntes o resúmenes enlazados, verificar unos apuntes, preparar un examen o repasar apuntes generados antes.
-compatibility: Pi en Linux (también por SSH) o macOS. Necesita python3 con pypdf y acceso a internet para el contraste. Opcional pero recomendado, las extensiones quiz y ask_user_question y el agente researcher de github.com/amosblomqvist/learn. Opcional, pdftoppm (poppler) para adaptar imágenes.
+compatibility: Pi o Claude Code, en Linux (también por SSH) o macOS. Necesita python3 con pypdf y acceso a internet para el contraste. Opcional pero recomendado, las extensiones quiz y ask_user_question y el agente researcher de github.com/amosblomqvist/learn. Opcional, pdftoppm (poppler) para adaptar imágenes.
 ---
 
 # Aprender una materia a partir de PDFs
@@ -11,9 +11,9 @@ Dos fases, que pueden hacerse por separado:
 1. **Apuntes**: leer los PDFs, construir un vault de notas atómicas enlazadas y **contrastar** los datos con fuentes externas.
 2. **Estudiar**: enseñar la materia usando esos apuntes como mapa, y registrar el progreso.
 
-Uso: `/skill:aprender [PDF o carpeta] [apuntes | contrastar | estudiar | repaso] [imagenes]`
-- **Carpeta de la sesión** (`<sesión>`): el directorio donde se ha abierto Pi. No preguntes cuál.
-- **Dónde van los apuntes**: **una carpeta por PDF**, con el nombre del PDF, dentro de la carpeta de la sesión. Si abres Pi en `/Estudios` y eliges `/Estudios/pdf/Tema1.pdf`, las notas van a `/Estudios/Tema1/`. El extractor da esa ruta en el campo `salida`; úsala siempre, sin inventar otra. En adelante, `<T>` es el nombre de esa carpeta.
+Uso: `/skill:aprender [PDF o carpeta] [apuntes | contrastar | estudiar | repaso] [imagenes]` en Pi, o `/aprender …` en Claude Code
+- **Carpeta de la sesión** (`<sesión>`): el directorio donde se ha abierto el agente (Pi o Claude Code). No preguntes cuál.
+- **Dónde van los apuntes**: **una carpeta por PDF**, con el nombre del PDF, dentro de la carpeta de la sesión. Si abres el agente en `/Estudios` y eliges `/Estudios/pdf/Tema1.pdf`, las notas van a `/Estudios/Tema1/`. El extractor da esa ruta en el campo `salida`; úsala siempre, sin inventar otra. En adelante, `<T>` es el nombre de esa carpeta.
 - **PDF**: es el dato de entrada de la skill; ver "Paso 0: pedir el PDF".
 - **Qué hacer**: `apuntes`, o el PDF elegido aún no tiene apuntes (`con_apuntes: false`) → fase 1. Al terminar, ofrece la fase 2.
 - `contrastar` → solo el paso 5, sobre unos apuntes que ya existen.
@@ -47,9 +47,25 @@ En la fase 2 se pregunta lo mismo: el PDF del que quiere estudiar. Así, el sond
 - En la fase 2 (estudiar) sí se habla en el chat, porque es la clase: explica con tus palabras, pero no pegues la nota.
 - En la fase 1, las notas se escriben como borradores y se crean todas a la vez con `crear_notas.py` (paso 6). Lo único que se enseña es el árbol de notas, antes y después de crearlas.
 
-Los scripts están en `scripts/`, dentro del directorio de esta skill (Pi te dice dónde está). En los comandos de abajo, `<skill>` es esa ruta. Ejecútalos siempre con `python3 -I`.
+Los scripts están en `scripts/`, dentro del directorio de esta skill. En los comandos de abajo, `<skill>` es esa ruta: en Claude Code es `${CLAUDE_SKILL_DIR}`; en Pi, la ruta que Pi indica al cargar la skill. Ejecútalos siempre con `python3 -I`.
 
 Escribe los apuntes **en el idioma del material** (normalmente español) y habla con el usuario en su idioma.
+
+## Pi y Claude Code
+
+Esta skill funciona igual en los dos agentes. Solo cambian los nombres de las herramientas:
+
+| Para | Pi | Claude Code |
+|---|---|---|
+| Leer, crear y modificar ficheros | `read`, `write`, `edit` | `Read`, `Write`, `Edit` |
+| Ejecutar comandos | `bash` | `Bash` |
+| Preguntas sin respuesta correcta | `ask_user_question` | `AskUserQuestion` (de 2 a 4 opciones; si hay más, lista numerada en el chat) |
+| Preguntas tipo test | `quiz` (de amosblomqvist/learn) | `AskUserQuestion` con las opciones, sin marcar la correcta; corriges tú en el chat |
+| Buscar en la web | `researcher`, `web_search`, `web_fetch` | `WebSearch`, `WebFetch` |
+| Trabajo en paralelo | subagentes | herramienta `Agent`, con varias llamadas en un mismo mensaje |
+| Ver páginas de un PDF como imagen | `read` sobre las imágenes del extractor | `Read` sobre el PDF con `pages` (máximo 20 páginas por llamada), o sobre las imágenes del extractor |
+
+Donde el texto nombre una herramienta de Pi, usa su equivalente si estás en Claude Code. Las preguntas al usuario se hacen siempre desde la conversación principal: en Claude Code, los subagentes no pueden usar `AskUserQuestion`. Se invoca con `/skill:<nombre> …` en Pi y con `/<nombre> …` en Claude Code.
 
 ## Herramientas según lo que haya instalado
 
@@ -124,7 +140,7 @@ Los subagentes no ven esta conversación: dales las rutas de los tramos, esta re
 
 Este paso describe las notas. Se escriben en el paso 6, primero como borradores.
 
-Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo, con Pi abierto en `/Estudios`:
+Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo, con el agente abierto en `/Estudios`:
 
 ```
 /Estudios/                       ← carpeta de la sesión = vault de Obsidian = jardín digital
@@ -388,7 +404,7 @@ Obsidian no se ejecuta en el servidor: el usuario abre los apuntes en su ordenad
   3. **Git** si ya usa el plugin Obsidian Git.
 - **Al empezar con unos apuntes que ya existen**, recuérdale en una línea que sincronice sus cambios locales antes (no lo preguntes ni esperes respuesta): si no, se trabajará sobre una versión antigua.
 - Los PDFs también tienen que estar en el servidor: si no están, dile cómo subirlos a la subcarpeta `pdf/` de la sesión (`scp *.pdf usuario@host:<sesión>/pdf/` o `rsync -avz`).
-- La generación de apuntes puede tardar mucho. Recomiéndale ejecutar Pi dentro de `tmux` para que no se corte si se cae la conexión. Las extensiones de subagentes de amosblomqvist/learn también necesitan tmux.
+- La generación de apuntes puede tardar mucho. Recomiéndale ejecutar Pi o Claude Code dentro de `tmux` para que no se corte si se cae la conexión. Las extensiones de subagentes de amosblomqvist/learn también necesitan tmux.
 
 ## Fase 2: estudiar
 

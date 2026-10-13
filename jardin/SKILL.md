@@ -1,16 +1,21 @@
 ---
 name: jardin
 description: Deja una carpeta de notas de Obsidian lista para publicarse con el plugin Digital Garden. Revisa todas las notas .md y les añade dg-publish true donde falte, respetando las que estén en false. Crea o completa index.md como portada (dg-home) con enlaces a todas las asignaturas o temas, sin borrar lo que ya tenga, y avisa de los problemas. Úsala cuando el usuario quiera publicar sus notas o su vault, preparar o revisar el jardín digital, marcar notas para publicar o actualizar el index con las asignaturas.
-compatibility: Pi en Linux (también por SSH) o macOS. Solo necesita python3.
+compatibility: Pi o Claude Code, en Linux (también por SSH) o macOS. Solo necesita python3.
 ---
 
 # Jardín digital
 
-Prepara la carpeta donde se ha abierto Pi (`<sesión>`), o la que indique el usuario, para publicarla con el plugin Digital Garden de Obsidian.
+Prepara la carpeta donde se ha abierto el agente (`<sesión>`), o la que indique el usuario, para publicarla con el plugin Digital Garden de Obsidian.
 
-Uso: `/skill:jardin [carpeta] [simular]`
+Uso: `/skill:jardin [carpeta] [simular]` en Pi, o `/jardin …` en Claude Code
 
-El script está en `scripts/`, dentro del directorio de esta skill (Pi te dice dónde está). En los comandos, `<skill>` es esa ruta.
+El script está en `scripts/`, dentro del directorio de esta skill. En los comandos, `<skill>` es esa ruta: en Claude Code es `${CLAUDE_SKILL_DIR}`; en Pi, la ruta que Pi indica al cargar la skill.
+
+## Pi y Claude Code
+
+Esta skill funciona igual en los dos agentes. Las herramientas `read`, `write`, `edit` y `bash` de Pi son `Read`, `Write`, `Edit` y `Bash` en Claude Code, y `ask_user_question` es `AskUserQuestion` (de 2 a 4 opciones; si hay más, lista numerada en el chat). Se invoca con `/skill:<nombre> …` en Pi y con `/<nombre> …` en Claude Code.
+
 
 **No preguntes nada.** La carpeta es la actual salvo que se indique otra.
 
@@ -48,7 +53,7 @@ No toques nada más del index.
 | Aviso | Qué decirle al usuario |
 |---|---|
 | Otra nota ya es la portada | Cuál es, y que si quiere que lo sea `index.md` tiene que quitarle `dg-home` a la otra |
-| Carpetas con notas pero sin índice | No se han enlazado en el index porque no tienen `00 <T> - Índice.md`. Se publican igual, pero no se llega a ellas desde la portada. Puede crear su índice con `/skill:aprender`, o enlazarlas a mano en `index.md` |
+| Carpetas con notas pero sin índice | No se han enlazado en el index porque no tienen `00 <T> - Índice.md`. Se publican igual, pero no se llega a ellas desde la portada. Puede crear su índice con la skill `aprender`, o enlazarlas a mano en `index.md` |
 | `no_publicadas_por_decision_del_usuario` | Lista de notas con `dg-publish: false` que **no** se publicarán |
 | Enlaces a notas no publicadas | Si alguna nota publicada enlaza a una de esas, el enlace saldrá roto en la web. Búscalo y avisa: `grep -rl "\[\[<nombre>" "<carpeta>" --include=*.md` |
 
