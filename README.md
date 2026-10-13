@@ -31,6 +31,7 @@ Se instalan las tres con un solo `git clone` (ver [Instalación](#instalación))
 - Lee **todas las páginas** del PDF, sin saltarse ninguna ni suponer lo que dicen. Lleva un registro de lectura página a página, y un script comprueba que no falta ninguna.
 - Crea **una carpeta por PDF** con notas atómicas enlazadas con `[[wikilinks]]`: una nota por concepto, ordenadas de las ideas base a las que dependen de ellas.
 - Cada nota explica qué problema resuelve el concepto, qué es, cómo se podría haber descubierto, de qué depende, ejemplos, errores comunes y preguntas de autoevaluación plegables. Las fórmulas van en LaTeX y los mapas en mermaid.
+- Ninguna nota se queda vacía: un script comprueba que cada concepto está desarrollado y con sus páginas antes de dar el tema por terminado.
 - Cita la página del PDF de cada dato. Lo que añade la IA y no está en el PDF va marcado como *Ampliación*.
 
 **2. Contraste**
@@ -237,6 +238,7 @@ Los usan las skills; no hace falta ejecutarlos a mano. Todos usan solo la biblio
 | `contrastar.py` | las dos | Busca un término en Wikipedia (español e inglés) y Wikcionario, con las fórmulas en LaTeX |
 | `revisar_lectura.py` | las dos | Comprueba que el registro de lectura cubre todas las páginas. En `aprender` mira la nota `Fuente - <T>`; en `contrastar`, el informe `Contraste - <T>` |
 | `revisar_enlaces.py` | aprender | Busca enlaces `[[...]]` rotos y notas huérfanas en el vault |
+| `revisar_notas.py` | aprender | Detecta notas de concepto vacías o a medias (sin "En una frase", sin "Qué es" desarrollado, sin páginas, secciones vacías…) |
 | `md2latex.py` + `callouts.lua` | 2latex | Junta las notas del tema, las convierte con pandoc, rellena la plantilla y compila |
 
 Cada skill lleva su propia copia de los scripts para poder funcionar sola. Si cambias `extraer_pdfs.py` o `contrastar.py`, cópialo a las dos carpetas.

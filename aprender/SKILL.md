@@ -150,7 +150,23 @@ Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo
 - Callouts: `> [!abstract]`, `> [!example]`, `> [!warning]`, `> [!info]`, `> [!success]`, `> [!danger]`, y `> [!question]-` (plegado, con la respuesta oculta).
 - Etiquetas: `materia/<asignatura>`, `tema/<tema>`.
 
-**Plantilla de nota de concepto** (las secciones que no aporten nada se quitan):
+**Ninguna nota vacía ni a medias, nunca.** Toda nota de concepto que crees tiene que estar **completa en el momento de crearla**, con información sacada del PDF:
+- "En una frase" con contenido;
+- "Qué es" explicado (no solo una fórmula o una lista);
+- lo que aporte el material para las demás secciones;
+- "Fuentes" con las páginas.
+
+Prohibido:
+- crear notas "para rellenar luego";
+- crear una nota solo para que un `[[enlace]]` no quede roto;
+- dejar títulos de sección sin texto;
+- dejar textos de la plantilla (`<…>`).
+
+Si un concepto no tiene en el PDF material suficiente para una nota completa, **no le hagas nota**: explícalo dentro de la nota que lo usa y quita los corchetes del enlace, o añádelo como `aliases` de la nota que sí lo cubre.
+
+Escribe las notas **una a una y enteras**. Si son muchas, hazlo por tandas (por ejemplo, de 10 en 10), pero cada nota se escribe completa. Antes de seguir con la siguiente tanda, comprueba las ya escritas con `revisar_notas.py` (paso 7).
+
+**Plantilla de nota de concepto** (las secciones que no aporten nada se quitan enteras, con su título):
 
 ```markdown
 ---
@@ -277,17 +293,24 @@ Reglas:
 
 ### 6. Actualizar sin destruir
 
-Si la carpeta `<T>/` ya tiene apuntes, o un concepto ya existe en otro tema: **lee cada nota antes de tocarla y fusiona**. No borres ni reescribas nunca `## Mis notas` ni el texto que se nota que ha escrito el usuario. No toques `estado`, `_<T> - Progreso.md` ni `Sesiones/`. Añade notas nuevas, amplía las que hay, actualiza el índice y vuelve a contrastar solo lo que haya cambiado.
+Si la carpeta `<T>/` ya tiene apuntes, ejecuta primero `revisar_notas.py "<T>"` (paso 7). **Las notas que salgan incompletas se completan** con el PDF: relee sus páginas (`.fuentes/`) y escribe la nota entera. Después, y también si un concepto ya existe en otro tema: **lee cada nota antes de tocarla y fusiona**. No borres ni reescribas nunca `## Mis notas` ni el texto que se nota que ha escrito el usuario. No toques `estado`, `_<T> - Progreso.md` ni `Sesiones/`. Añade notas nuevas, amplía las que hay, actualiza el índice y vuelve a contrastar solo lo que haya cambiado.
 
 ### 7. Verificar y entregar
 
 ```bash
 python3 -I <skill>/scripts/revisar_lectura.py "<salida>" --pdf "<valor pdf del manifiesto>"
+python3 -I <skill>/scripts/revisar_notas.py "<salida>"
 python3 -I <skill>/scripts/revisar_enlaces.py "<sesión>"
 ```
 
 - `revisar_lectura.py` comprueba que el registro de lectura de cada PDF cubre todas sus páginas. Si faltan páginas, **léelas** (no te limites a rellenar el registro), incorpora lo que haya a los apuntes y repite hasta que todo salga con ✓.
-- `revisar_enlaces.py` se ejecuta sobre toda la carpeta de la sesión, porque los temas se enlazan entre sí. Corrige los enlaces rotos y conecta las huérfanas. Repite hasta que no quede ningún enlace roto.
+- `revisar_notas.py` detecta las notas de concepto vacías o a medias: menos de 80 palabras, sin "En una frase", sin "Qué es" desarrollado, sin páginas en "Fuentes", con secciones vacías o con texto de la plantilla. **Complétalas** releyendo las páginas del PDF; si el PDF no da para una nota completa, bórrala y aplica la regla del paso 4. Repite hasta que no quede ninguna.
+- `revisar_enlaces.py` se ejecuta sobre toda la carpeta de la sesión, porque los temas se enlazan entre sí. Para cada enlace roto, por orden:
+  1. Si es un error de nombre o un sinónimo, corrige el enlace o añade el nombre a los `aliases` de la nota correcta.
+  2. Si el concepto está en el PDF con material suficiente, escribe su nota **completa**.
+  3. Si no, quita los corchetes y deja el texto normal.
+
+  **Nunca crees una nota vacía para arreglar un enlace.** Conecta también las huérfanas. Repite hasta que no quede ningún enlace roto, y vuelve a pasar `revisar_notas.py` si has creado notas.
 
 Al usuario dale: de dónde ha sacado los PDFs y cuántas páginas ha leído (todas), cuántas notas y fuentes se han generado, las páginas con poco texto que no se han adaptado (si las hay), las verdades base, la ruta de estudio resumida, **el resultado del contraste (sobre todo las discrepancias)**, la carpeta donde están (`<T>/`), cómo abrirlo (Obsidian → "Abrir carpeta como vault" → **la carpeta de la sesión**, para que se vean todos los temas y sus enlaces, y la Vista de grafo; si estás en un servidor, mira la sección siguiente) y la oferta de empezar a estudiar.
 
