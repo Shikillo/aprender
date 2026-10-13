@@ -39,6 +39,13 @@ En la fase 2 se pregunta lo mismo: el PDF del que quiere estudiar. Así, el sond
 
 **Pregunta lo mínimo.** Aparte del paso 0, la fase 1 se hace entera sin preguntar nada: decide con los valores por defecto y explica al final lo que has decidido. Solo para si no hay ningún PDF o si un paso falla y no tiene arreglo. En la fase 2, las únicas preguntas son las del método (el quiz de sondeo y de comprobación, y el visto bueno al plan).
 
+**No imprimas las notas en el terminal.** Créalas y sigue: el usuario las lee en Obsidian.
+- Crea los ficheros con la herramienta `write` y modifícalos con `edit`. **Nunca** con `cat <<EOF`, `echo`, `printf` ni `tee` en `bash`: el comando entero, con la nota dentro, sale en el terminal.
+- **Nunca** copies el contenido de una nota o informe en tu respuesta, ni entero, ni a trozos, ni como "vista previa" o "así ha quedado".
+- No uses `cat` para enseñar un fichero. Para leerlo tú, usa `read`.
+- Mientras trabajas, como mucho una línea de progreso por paso ("Tema1: 12/30 notas escritas"). Al terminar, solo el resumen que pide el último paso, con nombres y rutas de fichero, no con su contenido.
+- En la fase 2 (estudiar) sí se habla en el chat, porque es la clase: explica con tus palabras, pero no pegues la nota.
+
 Los scripts están en `scripts/`, dentro del directorio de esta skill (Pi te dice dónde está). En los comandos de abajo, `<skill>` es esa ruta. Ejecútalos siempre con `python3 -I`.
 
 Escribe los apuntes **en el idioma del material** (normalmente español) y habla con el usuario en su idioma.

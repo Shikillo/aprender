@@ -22,6 +22,13 @@ Los scripts están en `scripts/`, dentro del directorio de esta skill (Pi te dic
 - **Ser honesto.** Una afirmación solo es "verificada" si una fuente externa concreta dice lo mismo, y se cita esa fuente con su URL. Que "te suene correcto" no es una verificación. Si no encuentras fuente, es `sin-fuente`.
 - **Pregunta lo mínimo.** Lo único que se pregunta es qué contrastar (paso 0). Todo lo demás se hace sin preguntar.
 
+**No imprimas las notas en el terminal.** Créalas y sigue: el usuario las lee en Obsidian.
+- Crea los ficheros con la herramienta `write` y modifícalos con `edit`. **Nunca** con `cat <<EOF`, `echo`, `printf` ni `tee` en `bash`: el comando entero, con la nota dentro, sale en el terminal.
+- **Nunca** copies el contenido de una nota o informe en tu respuesta, ni entero, ni a trozos, ni como "vista previa" o "así ha quedado".
+- No uses `cat` para enseñar un fichero. Para leerlo tú, usa `read`.
+- Mientras trabajas, como mucho una línea de progreso por paso ("Tema1: 12/30 notas escritas"). Al terminar, solo el resumen que pide el último paso, con nombres y rutas de fichero, no con su contenido.
+- Excepción: si lo que se contrasta es un texto pegado en el chat, la respuesta va en el chat (paso 4). Aun así, en los informes en fichero, en el chat solo va el resumen.
+
 ## Paso 0: qué contrastar
 
 1. **Si se ha indicado** al invocarla (una ruta a un PDF o a un `.md`, una carpeta de apuntes, un nombre o un trozo del nombre, o texto pegado), úsalo sin preguntar.

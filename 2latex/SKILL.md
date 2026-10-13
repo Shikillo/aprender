@@ -14,6 +14,13 @@ El script está en `scripts/`, dentro del directorio de esta skill (Pi te dice d
 
 **Pregunta lo mínimo.** Lo único que se pregunta es el tema (paso 0). Todo lo demás se decide con los valores por defecto, y al final explicas lo que has decidido.
 
+**No imprimas las notas en el terminal.** Créalas y sigue: el usuario las lee en Obsidian.
+- Crea los ficheros con la herramienta `write` y modifícalos con `edit`. **Nunca** con `cat <<EOF`, `echo`, `printf` ni `tee` en `bash`: el comando entero, con la nota dentro, sale en el terminal.
+- **Nunca** copies el contenido de una nota o informe en tu respuesta, ni entero, ni a trozos, ni como "vista previa" o "así ha quedado".
+- No uses `cat` para enseñar un fichero. Para leerlo tú, usa `read`.
+- Mientras trabajas, como mucho una línea de progreso por paso ("Tema1: 12/30 notas escritas"). Al terminar, solo el resumen que pide el último paso, con nombres y rutas de fichero, no con su contenido.
+- No muestres `contenido.tex`, `main.tex` ni el log enteros: si falla la compilación, enseña solo las líneas del error.
+
 ## Paso 0: qué tema
 
 1. **Si lo ha indicado** (nombre o trozo del nombre de la carpeta, o "todos"), úsalo sin preguntar.

@@ -251,6 +251,8 @@ Si tenías un `00 Índice general.md` de una versión anterior, se renombra a `i
 
 Pi y la skill funcionan en el servidor, pero Obsidian está en tu ordenador:
 
+- Las skills crean las notas sin imprimirlas en el terminal: las lees en Obsidian. Pi enseña solo las 10 primeras líneas de cada fichero creado; si ves notas enteras, pulsa **Ctrl+O** para plegar la salida de las herramientas.
+
 - Ejecuta Pi dentro de **tmux**, para que una conexión caída no corte la generación de apuntes.
 - Para ver los apuntes en Obsidian, sincroniza la carpeta de estudio:
   - **Syncthing** (`apk add syncthing` / `apt install syncthing`): sincroniza en los dos sentidos. Es lo mejor si escribes en `## Mis notas`.

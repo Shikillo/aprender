@@ -14,6 +14,12 @@ El script está en `scripts/`, dentro del directorio de esta skill (Pi te dice d
 
 **No preguntes nada.** La carpeta es la actual salvo que se indique otra.
 
+**No imprimas las notas en el terminal.** Créalas y sigue: el usuario las lee en Obsidian.
+- Crea los ficheros con la herramienta `write` y modifícalos con `edit`. **Nunca** con `cat <<EOF`, `echo`, `printf` ni `tee` en `bash`: el comando entero, con la nota dentro, sale en el terminal.
+- **Nunca** copies el contenido de una nota o informe en tu respuesta, ni entero, ni a trozos, ni como "vista previa" o "así ha quedado".
+- No uses `cat` para enseñar un fichero. Para leerlo tú, usa `read`.
+- Mientras trabajas, como mucho una línea de progreso por paso ("Tema1: 12/30 notas escritas"). Al terminar, solo el resumen que pide el último paso, con nombres y rutas de fichero, no con su contenido.
+
 ## Paso 1: revisar y marcar
 
 Con `simular`, ejecuta solo con `--simular`, que no escribe nada. Después explica qué cambiaría y termina. Sin `simular`, ejecuta directamente:
