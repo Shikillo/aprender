@@ -33,7 +33,8 @@ Se instalan las cuatro con un solo `git clone` (ver [Instalación](#instalación
 - Lee **todas las páginas** del PDF, sin saltarse ninguna ni suponer lo que dicen. Lleva un registro de lectura página a página, y un script comprueba que no falta ninguna.
 - Crea **una carpeta por PDF** con notas atómicas enlazadas con `[[wikilinks]]`: una nota por concepto, ordenadas de las ideas base a las que dependen de ellas.
 - Cada nota explica qué problema resuelve el concepto, qué es, cómo se podría haber descubierto, de qué depende, ejemplos, errores comunes y preguntas de autoevaluación plegables. Las fórmulas van en LaTeX y los mapas en mermaid.
-- Ninguna nota se queda vacía: un script comprueba que cada concepto está desarrollado y con sus páginas antes de dar el tema por terminado.
+- Antes de escribir nada, **te enseña el árbol de las notas** que va a crear y te pregunta si las genera todas o quieres cambiar algo. Después las **crea todas de una vez**, con un solo comando y sin llenarte el terminal con su contenido.
+- Ninguna nota se queda vacía: si alguna está incompleta, no se crea ninguna hasta que estén todas bien.
 - Cita la página del PDF de cada dato. Lo que añade la IA y no está en el PDF va marcado como *Ampliación*.
 
 **2. Contraste**
@@ -270,6 +271,7 @@ Los usan las skills; no hace falta ejecutarlos a mano. Todos usan solo la biblio
 | `revisar_lectura.py` | las dos | Comprueba que el registro de lectura cubre todas las páginas. En `aprender` mira la nota `Fuente - <T>`; en `contrastar`, el informe `Contraste - <T>` |
 | `revisar_enlaces.py` | aprender | Busca enlaces `[[...]]` rotos y notas huérfanas en el vault |
 | `preparar_jardin.py` | aprender, contrastar, jardin | Pone `dg-publish: true` en todas las notas y crea o completa `index.md` (portada, `dg-home`) con todas las asignaturas |
+| `crear_notas.py` | aprender | Enseña el árbol de notas planeadas (`--arbol`) y, tras la confirmación, crea todas a la vez desde los borradores, comprobando antes que estén completas |
 | `revisar_notas.py` | aprender | Detecta notas de concepto vacías o a medias (sin "En una frase", sin "Qué es" desarrollado, sin páginas, secciones vacías…) |
 | `md2latex.py` + `callouts.lua` | 2latex | Junta las notas del tema, las convierte con pandoc, rellena la plantilla y compila |
 

@@ -37,7 +37,7 @@ La skill trabaja sobre el PDF, o los PDFs, que elija el usuario.
 
 En la fase 2 se pregunta lo mismo: el PDF del que quiere estudiar. Así, el sondeo, el plan y los repasos se limitan a los conceptos de esa fuente (los que tienen esa nota en `fuentes:`).
 
-**Pregunta lo mínimo.** Aparte del paso 0, la fase 1 se hace entera sin preguntar nada: decide con los valores por defecto y explica al final lo que has decidido. Solo para si no hay ningún PDF o si un paso falla y no tiene arreglo. En la fase 2, las únicas preguntas son las del método (el quiz de sondeo y de comprobación, y el visto bueno al plan).
+**Pregunta lo mínimo.** Aparte del paso 0 y de la confirmación del árbol de notas (paso 6), la fase 1 se hace entera sin preguntar nada: decide con los valores por defecto y explica al final lo que has decidido. Solo para si no hay ningún PDF o si un paso falla y no tiene arreglo. En la fase 2, las únicas preguntas son las del método (el quiz de sondeo y de comprobación, y el visto bueno al plan).
 
 **No imprimas las notas en el terminal.** Créalas y sigue: el usuario las lee en Obsidian.
 - Crea los ficheros con la herramienta `write` y modifícalos con `edit`. **Nunca** con `cat <<EOF`, `echo`, `printf` ni `tee` en `bash`: el comando entero, con la nota dentro, sale en el terminal.
@@ -45,6 +45,7 @@ En la fase 2 se pregunta lo mismo: el PDF del que quiere estudiar. Así, el sond
 - No uses `cat` para enseñar un fichero. Para leerlo tú, usa `read`.
 - Mientras trabajas, como mucho una línea de progreso por paso ("Tema1: 12/30 notas escritas"). Al terminar, solo el resumen que pide el último paso, con nombres y rutas de fichero, no con su contenido.
 - En la fase 2 (estudiar) sí se habla en el chat, porque es la clase: explica con tus palabras, pero no pegues la nota.
+- En la fase 1, las notas se escriben como borradores y se crean todas a la vez con `crear_notas.py` (paso 6). Lo único que se enseña es el árbol de notas, antes y después de crearlas.
 
 Los scripts están en `scripts/`, dentro del directorio de esta skill (Pi te dice dónde está). En los comandos de abajo, `<skill>` es esa ruta. Ejecútalos siempre con `python3 -I`.
 
@@ -97,7 +98,7 @@ Crea la carpeta `<T>/` de cada PDF elegido y parte el PDF en **tramos** de 10 p�
 **Regla absoluta: se lee cada página de cada PDF.** Nada de leer el índice o el principio y suponer de qué tratará el resto. Nada de saltarse páginas que "parecen" repetidas, de relleno o poco importantes. Lo que hay en una página solo se sabe leyéndola.
 
 - Lee los tramos **uno a uno, en orden y enteros** (con `read`; si un tramo sale truncado, sigue con `offset` hasta el final).
-- Después de cada tramo, añade sus páginas al **registro de lectura** de la nota de fuente (ver paso 4): qué hay en cada página o grupo de páginas y qué conceptos aparecen. Si una página no aporta nada nuevo (portada, índice, página en blanco, repetición), regístrala igual, diciendo qué es. Solo puedes saber eso si la has leído.
+- Después de cada tramo, añade sus páginas al **registro de lectura** del borrador de la nota de fuente, `<T>/.borrador/Fuente - <T>.md` (formato en el paso 4): qué hay en cada página o grupo de páginas y qué conceptos aparecen. Si una página no aporta nada nuevo (portada, índice, página en blanco, repetición), regístrala igual, diciendo qué es. Solo puedes saber eso si la has leído.
 - No pases a escribir las notas de concepto hasta haber leído todos los tramos de todos los PDFs, porque un concepto puede completarse o matizarse más adelante.
 
 Para cada fuente, saca un inventario:
@@ -119,7 +120,9 @@ Los subagentes no ven esta conversación: dales las rutas de los tramos, esta re
 - **Ordena por dependencias**: las raíces son verdades incondicionales y definiciones. Pon a prueba cada raíz: ¿se acepta tal cual, o se deduce de algo más simple? Si se deduce, bájala y añade el nodo de debajo. El orden topológico es la **ruta de estudio**.
 - `nivel`: 0 para las raíces; para el resto, 1 más que el mayor nivel de sus dependencias.
 
-### 4. Escribir el vault
+### 4. Cómo son los apuntes
+
+Este paso describe las notas. Se escriben en el paso 6, primero como borradores.
 
 Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo, con Pi abierto en `/Estudios`:
 
@@ -145,8 +148,8 @@ Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo
 
 **Los nombres de nota no se repiten en toda la carpeta de la sesión**, porque Obsidian enlaza por nombre y dos notas con el mismo nombre rompen los enlaces. Por eso los índices, el contraste, el progreso y las sesiones llevan `<T>` en el nombre. Y, sobre todo:
 
-- **Conceptos compartidos entre temas**: antes de crear `<T>/Conceptos/X.md`, busca si ya existe una nota X (o una con X en sus `aliases`) en la carpeta de otro tema (`find "<sesión>" -path "*/Conceptos/*.md" -not -path "*/.*"`). Si existe, **no la dupliques**: amplía esa nota (añade esta fuente a `fuentes:` y sus páginas a `## Fuentes`, y lo nuevo que aporte este PDF, según las reglas del paso 6) y enlázala desde este tema con `[[X]]`. Así los temas quedan enlazados entre sí.
-- **`index.md`** en la carpeta de la sesión es la portada del jardín digital. Enlaza todas las asignaturas o temas en su sección `## Asignaturas`. No lo escribas a mano desde cero: lo crea y lo completa `preparar_jardin.py` (paso 7), que añade los temas que falten sin borrar nada. Después tú solo añades, al final de la línea de cada tema nuevo, de qué trata (`- [[00 Tema1 - Índice|Tema1]]: circuitos eléctricos básicos`).
+- **Conceptos compartidos entre temas**: antes de crear `<T>/Conceptos/X.md`, busca si ya existe una nota X (o una con X en sus `aliases`) en la carpeta de otro tema (`find "<sesión>" -path "*/Conceptos/*.md" -not -path "*/.*"`). Si existe, **no la dupliques**: amplía esa nota (añade esta fuente a `fuentes:` y sus páginas a `## Fuentes`, y lo nuevo que aporte este PDF, según las reglas del paso 7; en el plan va como `"accion": "ampliar"`) y enlázala desde este tema con `[[X]]`. Así los temas quedan enlazados entre sí.
+- **`index.md`** en la carpeta de la sesión es la portada del jardín digital. Enlaza todas las asignaturas o temas en su sección `## Asignaturas`. No lo escribas a mano desde cero: lo crea y lo completa `preparar_jardin.py` (paso 8), que añade los temas que falten sin borrar nada. Después tú solo añades, al final de la línea de cada tema nuevo, de qué trata (`- [[00 Tema1 - Índice|Tema1]]: circuitos eléctricos básicos`).
 - **Volver a la portada**: cada `00 <T> - Índice.md` empieza con un enlace `[[index|← Inicio]]`.
 
 **Jardín digital (plugin Digital Garden de Obsidian).** Todo lo que crees en la carpeta de la sesión se publica, así que **toda nota lleva `dg-publish: true` en el frontmatter**: conceptos, índices, fuentes, contraste, progreso y sesiones. `index.md` lleva además `dg-home: true` (solo puede haber una portada). Si una nota tiene `dg-publish: false`, la ha puesto el usuario para no publicarla: respétalo. `preparar_jardin.py` lo comprueba y corrige al final; aun así, escribe la propiedad al crear cada nota.
@@ -174,7 +177,7 @@ Prohibido:
 
 Si un concepto no tiene en el PDF material suficiente para una nota completa, **no le hagas nota**: explícalo dentro de la nota que lo usa y quita los corchetes del enlace, o añádelo como `aliases` de la nota que sí lo cubre.
 
-Escribe las notas **una a una y enteras**. Si son muchas, hazlo por tandas (por ejemplo, de 10 en 10), pero cada nota se escribe completa. Antes de seguir con la siguiente tanda, comprueba las ya escritas con `revisar_notas.py` (paso 7).
+Cada nota se escribe **entera** en su borrador. `crear_notas.py` (paso 6) no crea ninguna nota si alguna está incompleta.
 
 **Plantilla de nota de concepto** (las secciones que no aporten nada se quitan enteras, con su título):
 
@@ -222,7 +225,7 @@ dg-publish: true
 > <respuesta, con su porqué>
 
 ## Contraste
-<lo rellena el paso 5>
+<resultado del paso 5: el contraste se hace antes de escribir, así que cada nota nace con el suyo>
 
 ## Fuentes
 - [[Fuente - <T>]], p. 12–14
@@ -262,9 +265,9 @@ El **registro de lectura** cubre todas las páginas, de la 1 a la última. Cada 
 
 ### 5. Contrastar con fuentes externas
 
-El material puede tener erratas, estar desactualizado o simplificar de más, y tú puedes equivocarte al resumirlo. Contrasta los datos antes de dar los apuntes por buenos.
+El material puede tener erratas, estar desactualizado o simplificar de más, y tú puedes equivocarte al resumirlo. **Contrasta el inventario de los pasos 2 y 3 antes de escribir las notas**: así cada borrador nace con su `## Contraste` y `01 <T> - Contraste.md` va en la misma creación. Con la opción `contrastar` sobre unos apuntes que ya existen, escribe el resultado directamente en las notas con `edit`.
 
-**Si está instalada la skill `contrastar`, sigue su modo "apuntes de aprender"**: es la versión completa de este paso (contrasta todas las afirmaciones, no una muestra). Lo de abajo es el mínimo cuando no está.
+**Si está instalada la skill `contrastar`, sigue sus criterios** (sus pasos 2 y 3: fuentes por tipo de dato, vigencia y clasificación) para **todas** las afirmaciones del inventario, no una muestra. Lo de abajo es el mínimo cuando no está.
 
 **Qué contrastar** (por orden de prioridad):
 1. Todas las raíces (nivel 0) y las definiciones clave.
@@ -303,11 +306,52 @@ Reglas:
 - Si una `Ampliación` tuya no se confirma, **bórrala**.
 - `01 <T> - Contraste.md` recoge un resumen (cuántos conceptos verificados, con discrepancia y sin contrastar), la lista de discrepancias con `[[enlaces]]` a cada nota, y las fuentes externas usadas.
 
-### 6. Actualizar sin destruir
+### 6. Plan, árbol y creación de una vez
 
-Si la carpeta `<T>/` ya tiene apuntes, ejecuta primero `revisar_notas.py "<T>"` (paso 7). **Las notas que salgan incompletas se completan** con el PDF: relee sus páginas (`.fuentes/`) y escribe la nota entera. Después, y también si un concepto ya existe en otro tema: **lee cada nota antes de tocarla y fusiona**. No borres ni reescribas nunca `## Mis notas` ni el texto que se nota que ha escrito el usuario. No toques `estado`, `_<T> - Progreso.md` ni `Sesiones/`. Añade notas nuevas, amplía las que hay, actualiza el índice y vuelve a contrastar solo lo que haya cambiado.
+No escribas las notas directamente en su sitio. Hazlo así:
 
-### 7. Verificar y entregar
+1. **Plan.** Escribe `<T>/.borrador/plan.json` con todas las notas: índice, contraste, fuente y una por concepto (con `nivel` y `paginas`). Las que ya existen (en este tema o en otro, como los conceptos compartidos) van con `"accion": "ampliar"`. Las rutas son relativas a `<T>/`:
+   ```json
+   {"notas": [
+     {"ruta": "00 Tema1 - Índice.md"},
+     {"ruta": "01 Tema1 - Contraste.md"},
+     {"ruta": "Fuente - Tema1.md"},
+     {"ruta": "Conceptos/Ley de Ohm.md", "nivel": 2, "paginas": "12-14"},
+     {"ruta": "../Tema2/Conceptos/Carga eléctrica.md", "accion": "ampliar"}
+   ]}
+   ```
+2. **Árbol y confirmación.**
+   ```bash
+   python3 -I <skill>/scripts/crear_notas.py "<salida>" --arbol
+   ```
+   Copia el árbol tal cual en tu respuesta. Es la excepción a "no imprimir": es un índice, no contenido. Después pregunta, con `ask_user_question` si existe o en el chat: **"¿Genero estas N notas?"**, con las opciones "Sí, todas" y "Quiero cambiar algo". Si pide cambios (quitar, juntar, separar o renombrar notas), actualiza el plan, vuelve a enseñar el árbol y vuelve a preguntar. No escribas ningún borrador hasta tener el sí.
+3. **Borradores.** Escribe las notas completas, con `write`, en lotes `<T>/.borrador/lote-01.md`, `lote-02.md`…, de unas 5 a 8 notas cada uno. Pon cada nota detrás de una línea con su ruta exacta del plan:
+   ```
+   <!-- NOTA: Conceptos/Ley de Ohm.md -->
+   ---
+   tipo: concepto
+   …
+   ```
+   El borrador de la fuente, `.borrador/Fuente - <T>.md`, ya existe del paso 2. Cada borrador cumple las reglas del paso 4: completo, con páginas y con su `## Contraste`.
+4. **Crear todas de una vez**, con un solo comando:
+   ```bash
+   python3 -I <skill>/scripts/crear_notas.py "<salida>"
+   ```
+   Antes de escribir nada, comprueba:
+   - que cada nota del plan tiene borrador y que no hay borradores fuera del plan;
+   - que no existe ya ninguna de las notas a crear (nunca sobrescribe);
+   - que los nombres son válidos;
+   - que los conceptos están completos.
+
+   Si algo falla, **no crea ninguna**: arregla los borradores con `edit` y vuelve a ejecutarlo. Si todo va bien, crea todas las notas (con `dg-publish: true`), borra `.borrador/` e imprime el árbol final. Después amplía con `edit` las notas marcadas "ampliar" (paso 7).
+
+**Si al empezar ya existe `<T>/.borrador/`**, es de una ejecución anterior que se cortó. Reutilízalo: lee el plan y los lotes y sigue donde se quedó, sin volver a preguntar lo ya confirmado.
+
+### 7. Actualizar sin destruir
+
+Si la carpeta `<T>/` ya tiene apuntes, ejecuta primero `revisar_notas.py "<T>"` (paso 8). **Las notas que salgan incompletas se completan** con el PDF: relee sus páginas (`.fuentes/`) y escribe la nota entera. Después, y también si un concepto ya existe en otro tema: **lee cada nota antes de tocarla y fusiona**. No borres ni reescribas nunca `## Mis notas` ni el texto que se nota que ha escrito el usuario. No toques `estado`, `_<T> - Progreso.md` ni `Sesiones/`. Las notas nuevas se crean con el plan del paso 6, en el que las existentes van como "ampliar". Amplía esas con `edit`, actualiza el índice y vuelve a contrastar solo lo que haya cambiado.
+
+### 8. Verificar y entregar
 
 ```bash
 python3 -I <skill>/scripts/revisar_lectura.py "<salida>" --pdf "<valor pdf del manifiesto>"
