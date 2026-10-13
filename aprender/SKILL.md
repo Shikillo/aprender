@@ -117,11 +117,11 @@ Los subagentes no ven esta conversación: dales las rutas de los tramos, esta re
 Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo, con Pi abierto en `/Estudios`:
 
 ```
-/Estudios/                       ← carpeta de la sesión = vault de Obsidian
+/Estudios/                       ← carpeta de la sesión = vault de Obsidian = jardín digital
 ├── pdf/
 │   ├── Tema1.pdf
 │   └── Tema2.pdf
-├── 00 Índice general.md         ← enlaza los índices de todos los temas
+├── index.md                     ← portada del jardín (dg-home): enlaza todas las asignaturas
 ├── Tema1/
 │   ├── 00 Tema1 - Índice.md     ← mapa, ruta de estudio, verdades base
 │   ├── 01 Tema1 - Contraste.md  ← informe de verificación (paso 5)
@@ -139,7 +139,10 @@ Cada PDF tiene su carpeta `<T>/` dentro de la carpeta de la sesión. Por ejemplo
 **Los nombres de nota no se repiten en toda la carpeta de la sesión**, porque Obsidian enlaza por nombre y dos notas con el mismo nombre rompen los enlaces. Por eso los índices, el contraste, el progreso y las sesiones llevan `<T>` en el nombre. Y, sobre todo:
 
 - **Conceptos compartidos entre temas**: antes de crear `<T>/Conceptos/X.md`, busca si ya existe una nota X (o una con X en sus `aliases`) en la carpeta de otro tema (`find "<sesión>" -path "*/Conceptos/*.md" -not -path "*/.*"`). Si existe, **no la dupliques**: amplía esa nota (añade esta fuente a `fuentes:` y sus páginas a `## Fuentes`, y lo nuevo que aporte este PDF, según las reglas del paso 6) y enlázala desde este tema con `[[X]]`. Así los temas quedan enlazados entre sí.
-- **`00 Índice general.md`** en la carpeta de la sesión: una línea por tema con `[[00 <T> - Índice]]` y de qué trata. Créalo o actualízalo cada vez que se añade un tema.
+- **`index.md`** en la carpeta de la sesión es la portada del jardín digital. Enlaza todas las asignaturas o temas en su sección `## Asignaturas`. No lo escribas a mano desde cero: lo crea y lo completa `preparar_jardin.py` (paso 7), que añade los temas que falten sin borrar nada. Después tú solo añades, al final de la línea de cada tema nuevo, de qué trata (`- [[00 Tema1 - Índice|Tema1]]: circuitos eléctricos básicos`).
+- **Volver a la portada**: cada `00 <T> - Índice.md` empieza con un enlace `[[index|← Inicio]]`.
+
+**Jardín digital (plugin Digital Garden de Obsidian).** Todo lo que crees en la carpeta de la sesión se publica, así que **toda nota lleva `dg-publish: true` en el frontmatter**: conceptos, índices, fuentes, contraste, progreso y sesiones. `index.md` lleva además `dg-home: true` (solo puede haber una portada). Si una nota tiene `dg-publish: false`, la ha puesto el usuario para no publicarla: respétalo. `preparar_jardin.py` lo comprueba y corrige al final; aun así, escribe la propiedad al crear cada nota.
 
 **Reglas de Obsidian:**
 - El nombre del fichero es el título, en lenguaje natural ("Ley de Ohm.md"). Prohibido en nombres: `: / \ # ^ [ ] | ? * < > "`.
@@ -177,6 +180,7 @@ nivel: 1
 fuentes: ["[[Fuente - <T>]]"]
 contraste: pendiente
 estado: nuevo
+dg-publish: true
 ---
 # <Concepto>
 
@@ -226,6 +230,7 @@ estado: nuevo
 ```markdown
 ---
 tipo: fuente
+dg-publish: true
 pdf: <el valor "pdf" del manifiesto, tal cual, p. ej. PDFs/tema1/Redes.pdf>
 paginas: 48
 ---
@@ -301,6 +306,7 @@ Si la carpeta `<T>/` ya tiene apuntes, ejecuta primero `revisar_notas.py "<T>"` 
 python3 -I <skill>/scripts/revisar_lectura.py "<salida>" --pdf "<valor pdf del manifiesto>"
 python3 -I <skill>/scripts/revisar_notas.py "<salida>"
 python3 -I <skill>/scripts/revisar_enlaces.py "<sesión>"
+python3 -I <skill>/scripts/preparar_jardin.py "<sesión>"
 ```
 
 - `revisar_lectura.py` comprueba que el registro de lectura de cada PDF cubre todas sus páginas. Si faltan páginas, **léelas** (no te limites a rellenar el registro), incorpora lo que haya a los apuntes y repite hasta que todo salga con ✓.
@@ -311,8 +317,14 @@ python3 -I <skill>/scripts/revisar_enlaces.py "<sesión>"
   3. Si no, quita los corchetes y deja el texto normal.
 
   **Nunca crees una nota vacía para arreglar un enlace.** Conecta también las huérfanas. Repite hasta que no quede ningún enlace roto, y vuelve a pasar `revisar_notas.py` si has creado notas.
+- `preparar_jardin.py` va **el último**:
+  - pone `dg-publish: true` en todas las notas de la sesión que no lo tengan (respeta los `false`);
+  - crea o completa `index.md` con `dg-home: true` y añade a `## Asignaturas` los temas que falten;
+  - si existe el antiguo `00 Índice general.md`, lo renombra a `index.md` y actualiza los enlaces.
 
-Al usuario dale: de dónde ha sacado los PDFs y cuántas páginas ha leído (todas), cuántas notas y fuentes se han generado, las páginas con poco texto que no se han adaptado (si las hay), las verdades base, la ruta de estudio resumida, **el resultado del contraste (sobre todo las discrepancias)**, la carpeta donde están (`<T>/`), cómo abrirlo (Obsidian → "Abrir carpeta como vault" → **la carpeta de la sesión**, para que se vean todos los temas y sus enlaces, y la Vista de grafo; si estás en un servidor, mira la sección siguiente) y la oferta de empezar a estudiar.
+  Después, completa la descripción de los temas que aparezcan en `asignaturas_añadidas`. Si avisa de otra portada, o de carpetas con notas pero sin índice, díselo al usuario.
+
+Al usuario dale: de dónde ha sacado los PDFs y cuántas páginas ha leído (todas), cuántas notas y fuentes se han generado, las páginas con poco texto que no se han adaptado (si las hay), las verdades base, la ruta de estudio resumida, **el resultado del contraste (sobre todo las discrepancias)**, la carpeta donde están (`<T>/`), que todo queda listo para publicar en el jardín digital (cuántas notas, y si `index.md` se ha creado o actualizado), cómo abrirlo (Obsidian → "Abrir carpeta como vault" → **la carpeta de la sesión**, para que se vean todos los temas y sus enlaces, y la Vista de grafo; si estás en un servidor, mira la sección siguiente) y la oferta de empezar a estudiar.
 
 ### Si estás en un servidor por SSH
 
@@ -377,6 +389,7 @@ Al cerrar cada nodo, y siempre antes de terminar:
 - **Repaso espaciado**: intervalos de 1, 3, 7, 14, 30 y 60 días. Un acierto avanza al siguiente intervalo; un fallo lo devuelve a 1 día y el estado a `aprendiendo`.
 - En `_<T> - Progreso.md`: una tabla `| Concepto | Estado | Último repaso | Próximo repaso | Notas |`.
 - En `<T>/Sesiones/<T> AAAA-MM-DD.md`: qué se vio (con `[[enlaces]]`), el mapa del plan, los quizzes con el resultado, las concepciones erróneas detectadas y qué queda pendiente.
+- Al terminar la sesión, ejecuta `preparar_jardin.py "<sesión>"` para que las notas nuevas (sesión y progreso) lleven `dg-publish: true`.
 
 ### Modo repaso
 

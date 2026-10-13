@@ -78,7 +78,7 @@ Una carpeta por PDF, con su nombre, dentro de la carpeta donde abriste Pi:
 ```
 /Estudios/                       ← ábrela como vault en Obsidian
 ├── pdf/
-├── 00 Índice general.md         ← enlaza todos los temas
+├── index.md                     ← portada del jardín digital: enlaza todas las asignaturas
 ├── Tema1/
 │   ├── 00 Tema1 - Índice.md     ← mapa de conceptos, ideas base y ruta de estudio
 │   ├── 01 Tema1 - Contraste.md  ← resultado de la verificación
@@ -218,6 +218,23 @@ La skill funciona sin nada más: hace las preguntas en el chat y contrasta con W
 cd /Estudios && git clone https://github.com/amosblomqvist/learn .pi
 ```
 
+## Publicar como jardín digital
+
+La carpeta de estudio está lista para publicarse con el plugin [Digital Garden](https://github.com/oleeskild/obsidian-digital-garden) de Obsidian:
+
+- **Todas las notas** llevan `dg-publish: true`: conceptos, índices, fuentes, contraste, progreso y sesiones. Si quieres que una nota no se publique, ponle `dg-publish: false`; las skills lo respetan.
+- **`index.md`** es la portada (`dg-home: true`) y enlaza todas las asignaturas. Cada vez que se genera un tema nuevo, se añade a su sección `## Asignaturas` sin tocar lo que hayas escrito en el index.
+- Las carpetas ocultas (`.fuentes/`, `.latex/`) no se publican.
+
+Lo hace el script `preparar_jardin.py`, que las skills ejecutan al terminar. También puedes ejecutarlo a mano sobre una carpeta que ya tengas:
+
+```sh
+python3 -I ~/.agents/skills/estudio/aprender/scripts/preparar_jardin.py /Estudios --simular   # ver qué cambiaría
+python3 -I ~/.agents/skills/estudio/aprender/scripts/preparar_jardin.py /Estudios
+```
+
+Si tenías un `00 Índice general.md` de una versión anterior, se renombra a `index.md` y se actualizan los enlaces.
+
 ## Usarla en un servidor por SSH
 
 Pi y la skill funcionan en el servidor, pero Obsidian está en tu ordenador:
@@ -238,6 +255,7 @@ Los usan las skills; no hace falta ejecutarlos a mano. Todos usan solo la biblio
 | `contrastar.py` | las dos | Busca un término en Wikipedia (español e inglés) y Wikcionario, con las fórmulas en LaTeX |
 | `revisar_lectura.py` | las dos | Comprueba que el registro de lectura cubre todas las páginas. En `aprender` mira la nota `Fuente - <T>`; en `contrastar`, el informe `Contraste - <T>` |
 | `revisar_enlaces.py` | aprender | Busca enlaces `[[...]]` rotos y notas huérfanas en el vault |
+| `preparar_jardin.py` | aprender, contrastar | Pone `dg-publish: true` en todas las notas y crea o completa `index.md` (portada, `dg-home`) con todas las asignaturas |
 | `revisar_notas.py` | aprender | Detecta notas de concepto vacías o a medias (sin "En una frase", sin "Qué es" desarrollado, sin páginas, secciones vacías…) |
 | `md2latex.py` + `callouts.lua` | 2latex | Junta las notas del tema, las convierte con pandoc, rellena la plantilla y compila |
 

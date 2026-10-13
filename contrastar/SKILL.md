@@ -106,6 +106,7 @@ El nombre lleva `<T>` para que no se repita entre temas, porque Obsidian enlaza 
 ```markdown
 ---
 tipo: contraste
+dg-publish: true
 pdf: <el valor "pdf" del manifiesto, tal cual>
 paginas: 48
 fecha: AAAA-MM-DD
@@ -174,5 +175,11 @@ Al usuario dale:
 - cuántas afirmaciones hay de cada estado;
 - **las discrepancias**, una línea cada una con su página y lo que parece correcto;
 - dónde está el informe.
+
+Antes de entregar, si has escrito en la carpeta de una sesión (un informe en `<T>/` o el contraste de unos apuntes), ejecuta:
+```bash
+python3 -I <skill>/scripts/preparar_jardin.py "<sesión>"
+```
+Así todo lo nuevo lleva `dg-publish: true` para el jardín digital de Obsidian, e `index.md` incluye todas las asignaturas. Con texto pegado no hace falta.
 
 Si estás por SSH (`$SSH_CONNECTION`), da la ruta absoluta del informe para que pueda traérselo a su ordenador.
